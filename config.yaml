@@ -1,0 +1,120 @@
+# Configuration for House Price Prediction Model
+# NYCU IAII ML 2025 Regression Competition
+
+# Data Configuration
+data:
+  train_file: "train-v2.xlsx"
+  valid_file: "valid-v2.xlsx" 
+  test_file: "test-reindex-test-v2.1.xlsx"
+  output_file: "final_house_price_predictions.csv"
+  target_column: "總價元"
+  id_column: "編號"
+
+# Model Configuration
+model:
+  type: "xgboost"
+  parameters:
+    n_estimators: 2500
+    max_depth: 12
+    learning_rate: 0.04
+    subsample: 0.85
+    colsample_bytree: 0.85
+    reg_alpha: 0.1
+    reg_lambda: 1.2
+    min_child_weight: 2
+    gamma: 0.05
+    random_state: 42
+    tree_method: "gpu_hist"  # Use "hist" if no GPU available
+    n_jobs: -1
+
+# Feature Engineering Configuration
+feature_engineering:
+  # Basic features
+  create_area_features: true
+  create_floor_features: true
+  create_transaction_features: true
+  create_time_features: true
+  
+  # Advanced features
+  create_correlation_features: true
+  create_target_encoding: true
+  create_level_features: true
+  create_combination_features: true
+  
+  # Target encoding parameters
+  target_encoding:
+    smoothing_factor: 10
+    min_samples_leaf: 5
+    
+  # Level binning configuration
+  area_bins: [0, 30, 60, 100, 200, float('inf')]
+  area_labels: ["迷你", "小型", "中型", "大型", "豪宅"]
+  
+  floor_bins: [-float('inf'), 0, 3, 7, 15, float('inf')]
+  floor_labels: ["地下", "低樓層", "中樓層", "高樓層", "超高樓層"]
+  
+  parking_bins: [0, 1, 2, 3, float('inf')]
+  parking_labels: ["無車位", "單車位", "雙車位", "多車位"]
+
+# Feature Selection Configuration
+feature_selection:
+  method: "xgboost_importance"
+  top_k_features: 30
+  selection_model:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.1
+    random_state: 42
+
+# Data Cleaning Configuration
+data_cleaning:
+  # Year range for valid transactions
+  min_year: 90   # 民國90年
+  max_year: 114  # 民國114年
+  
+  # Month range
+  min_month: 1
+  max_month: 12
+  
+  # Remove columns (privacy and redundancy)
+  drop_columns: [
+    "建案名稱", "編號", "總價元", "土地位置建物門牌", "備註",
+    "都市土地使用分區", "非都市土地使用分區", "棟及號", "交易筆棟數",
+    "非都市土地使用編定", "土地使用分區", "縣市名稱", "鄉鎮市區",
+    "建築完成年月", "有無管理組織", "解約情形", "建物現況格局-廳",
+    "交易標的", "建物型態", "主要建材", "主要用途", "交易年月日",
+    "建物現況格局-房", "建物現況格局-衛", "建物現況格局-隔間", "車位類別",
+    "面積等級", "樓層等級", "車位等級", "地區面積組合", "建物車位組合"
+  ]
+
+# Evaluation Configuration
+evaluation:
+  metrics: ["r2", "rmse", "mae", "mape"]
+  cv_folds: 5
+  test_size: 0.2
+  random_state: 42
+
+# Output Configuration
+output:
+  save_predictions: true
+  save_feature_importance: true
+  save_model: true
+  decimal_places: 2
+  encoding: "utf-8"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "house_price_prediction.log"
+
+# Hardware Configuration
+hardware:
+  use_gpu: true
+  gpu_device: 0
+  memory_limit: "8GB"
+  parallel_jobs: -1
+
+# Reproducibility
+random_seed: 42
+deterministic: true
