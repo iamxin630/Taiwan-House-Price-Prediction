@@ -1,180 +1,192 @@
-# 房價預測模型 - NYCU IAII ML 2025 Regression
+````markdown
+# House Price Prediction Model - NYCU IAII ML 2025 Regression
 
-## 專案概述
+## Project Overview
 
-本專案是針對台灣不動產市場的房價預測模型，使用機器學習技術分析房地產交易資料，預測房屋總價。模型採用XGBoost回歸算法，結合進階特徵工程技術，達到高準確度的房價預測。
+This project focuses on building a **house price prediction model** for the Taiwan real estate market using **machine learning** techniques. It leverages **XGBoost regression** combined with **advanced feature engineering** to accurately predict total house prices based on real estate transaction data.
 
-## 專案目標
+## Project Goals
 
-- 預測台灣房地產市場的房屋總價
-- 識別影響房價的關鍵因素
-- 提供準確且可靠的房價預測模型
-- 協助房地產相關決策制定
+- Predict total house prices in the Taiwan real estate market  
+- Identify key factors influencing property prices  
+- Provide a stable and accurate price prediction model  
+- Assist in real estate decision-making and investment analysis
 
-## 資料集
+## Dataset
 
-### 輸入資料
-- `train-v2.xlsx`: 訓練資料集
-- `valid-v2.xlsx`: 驗證資料集  
-- `test-reindex-test-v2.1.xlsx`: 測試資料集
+### Input Data
+- `train-v2.xlsx`: Training dataset  
+- `valid-v2.xlsx`: Validation dataset  
+- `test-reindex-test-v2.1.xlsx`: Test dataset
 
-### 輸出結果
-- `final_house_price_predictions.csv`: 最終預測結果
+### Output
+- `final_house_price_predictions.csv`: Final prediction results
 
-## 核心功能
+## Core Functions
 
-### 1. 資料清理
-- **異常值處理**: 自動檢測並移除格式錯誤的價格資料
-- **時間資料處理**: 解析交易年月日，提取年份和月份資訊
-- **樓層資料標準化**: 將中文樓層描述轉換為數值
-- **資料完整性檢查**: 確保所有關鍵欄位的資料品質
+### 1. Data Cleaning
+- **Outlier handling**: Detect and remove invalid or corrupted price records  
+- **Date processing**: Extract year and month from transaction dates  
+- **Floor standardization**: Convert Chinese floor descriptions to numeric values  
+- **Data integrity check**: Ensure completeness of critical fields
 
-### 2. 進階特徵工程
+### 2. Advanced Feature Engineering
 
-#### 基礎特徵
-- 地區特徵: 縣市分類、直轄市標記
-- 面積特徵: 土地、建物、車位面積及其組合
-- 樓層特徵: 樓層比例、頂樓/低樓層/地下層標記
-- 交易特徵: 交易數量、車位包含情況
+#### Basic Features
+- Location: County, municipality flags  
+- Area: Land, building, and parking area combinations  
+- Floor: Floor ratio, top/bottom floor flags, basement detection  
+- Transaction: Parking availability, number of transactions
 
-#### 衍生特徵
-- **高相關性組合特徵**: 總樓層×面積 (r=0.6715)
-- **車位相關特徵**: 車位數、車位面積及其組合 (r>0.58)
-- **面積等級分類**: 迷你、小型、中型、大型、豪宅
-- **樓層等級分類**: 地下、低樓層、中樓層、高樓層、超高樓層
-- **綜合豪華指標**: 結合面積、車位、樓層的綜合評分
+#### Derived Features
+- High-correlation combo features: Total floors × building area (r = 0.6715)  
+- Parking features: Parking count, parking area combinations (r > 0.58)  
+- Area categories: Mini / Small / Medium / Large / Luxury  
+- Floor categories: Basement / Low / Mid / High / Super-high floors  
+- Luxury index: Composite score from area, floor, and parking features
 
-#### 目標編碼
-- **價格等級編碼**: 將類別特徵轉換為對應的平均價格
-- **平滑化處理**: 防止過擬合的貝葉斯平滑
-- **組合特徵編碼**: 地區×面積、建物×車位的交叉編碼
-- **價格變異性特徵**: 捕捉不同類別的價格波動性
+#### Target Encoding
+- Price level encoding: Convert categorical features to mean price values  
+- Bayesian smoothing: Prevent overfitting in target encoding  
+- Cross encoding: Location × area, building × parking  
+- Price variability features: Capture price dispersion across categories
 
-### 3. 模型架構
+## Model Architecture
 
-#### XGBoost 回歸模型
+### XGBoost Regressor
 ```python
 XGBRegressor(
-    n_estimators=2500,      # 增強模型複雜度
-    max_depth=12,           # 深度學習能力
-    learning_rate=0.04,     # 穩定學習過程
-    subsample=0.85,         # 防止過擬合
-    colsample_bytree=0.85,  # 特徵採樣
-    reg_alpha=0.1,          # L1正則化
-    reg_lambda=1.2,         # L2正則化
-    tree_method='gpu_hist'  # GPU加速
+    n_estimators=2500,
+    max_depth=12,
+    learning_rate=0.04,
+    subsample=0.85,
+    colsample_bytree=0.85,
+    reg_alpha=0.1,
+    reg_lambda=1.2,
+    tree_method='gpu_hist'
 )
-```
+````
 
-#### 特徵選擇
-- 智能特徵重要性分析
-- 自動選擇前30個最重要特徵
-- 基於XGBoost的特徵排序
+### Feature Selection
 
-## 模型表現
+* Intelligent feature importance ranking
+* Automatically selects the top 30 most impactful features
+* Uses XGBoost feature importance for ranking
 
-### 評估指標
-- **R² Score**: 模型解釋變異的百分比
-- **RMSE**: 均方根誤差 (元)
-- **MAE**: 平均絕對誤差 (元) 
-- **MAPE**: 平均絕對百分比誤差 (%)
+## Model Performance
 
-### 預期表現
-- 驗證集 R² > 0.85
-- 能解釋超過85%的房價變異
-- 提供穩定且準確的預測結果
+### Evaluation Metrics
 
-## 安裝與使用
+* R² Score: Variance explained by the model
+* RMSE: Root Mean Squared Error (TWD)
+* MAE: Mean Absolute Error (TWD)
+* MAPE: Mean Absolute Percentage Error (%)
 
-### 環境需求
+### Expected Results
+
+* R² on validation set > 0.85
+* Explains over 85% of price variability
+* Produces stable and accurate predictions
+
+## Installation and Usage
+
+### Environment Setup
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 執行步驟
+### Steps to Run
 
-1. **準備資料**: 將資料檔案放置在專案根目錄
-2. **執行notebook**: 按順序執行所有cell
-3. **獲取結果**: 查看生成的 `final_house_price_predictions.csv`
+1. Prepare data and place dataset files in the project root directory
+2. Run the notebook in Jupyter and execute all cells in order
+3. Check `final_house_price_predictions.csv` for output results
 
 ```bash
-# 啟動Jupyter Notebook
 jupyter notebook new.ipynb
 ```
 
-### 程式執行流程
+### Notebook Flow
 
-1. **Cell 1**: 套件安裝與導入
-2. **Cell 2**: 資料載入
-3. **Cell 3**: 資料清理
-4. **Cell 4**: 特徵工程
-5. **Cell 5**: 模型訓練
-6. **Cell 6**: 模型評估
-7. **Cell 7**: 結果輸出
+1. Cell 1 – Library installation & imports
+2. Cell 2 – Data loading
+3. Cell 3 – Data cleaning
+4. Cell 4 – Feature engineering
+5. Cell 5 – Model training
+6. Cell 6 – Model evaluation
+7. Cell 7 – Result export
 
-## 特徵說明
+## Feature Description
 
-### 原始特徵 (部分)
-- 土地移轉總面積平方公尺
-- 建物移轉總面積平方公尺
-- 車位移轉總面積平方公尺
-- 移轉層次
-- 總樓層數
-- 建物型態
-- 主要建材
+### Original Features (Partial)
 
-### 工程特徵
-- 總樓層×面積: 最重要的組合特徵
-- 車位總價值指標: 車位數×車位面積
-- 豪華指標: 綜合多維度的豪華程度評分
-- 地區面積組合_價格等級: 地區與面積的交叉編碼
-- 樓層價值係數: 樓層效應的複合計算
+* Land transfer area (m²)
+* Building transfer area (m²)
+* Parking transfer area (m²)
+* Floor information
+* Total number of floors
+* Building type
+* Primary material
 
-## 模型解釋
+### Engineered Features
 
-### 重要特徵排序
-1. 總樓層×面積 (相關係數: 0.6715)
-2. 車位相關特徵 (相關係數: ~0.59)
-3. 建物面積特徵 (相關係數: 0.4694)
-4. 建物數量 (相關係數: 0.3793)
-5. 價格等級編碼特徵
+* Total floors × building area (most important combination)
+* Parking value index = number of parking spaces × parking area
+* Luxury index = composite feature from multiple dimensions
+* Location-area price encoding
+* Floor value coefficient
 
-### 商業價值
-- **房地產估價**: 為房屋提供客觀的市場價格參考
-- **投資決策**: 協助投資者評估房產投資價值
-- **市場分析**: 理解影響房價的關鍵因素
-- **風險評估**: 識別價格異常的房產
+## Model Explainability
 
-## 檔案結構
+### Top Feature Importance
+
+1. Total floors × area (correlation: 0.6715)
+2. Parking features (correlation: ~0.59)
+3. Building area (correlation: 0.4694)
+4. Number of buildings (correlation: 0.3793)
+5. Price-level encoded features
+
+### Business Value
+
+* Property valuation: Provide objective market price reference
+* Investment decision support: Evaluate potential property value
+* Market analysis: Identify key drivers of property prices
+* Risk assessment: Detect pricing anomalies
+
+## Project Structure
 
 ```
 nycu-iaii-ml-2025-regression/
-├── new.ipynb                           # 主程式notebook
-├── README.md                           # 專案說明
-├── requirements.txt                    # 套件需求
-├── config.yaml                         # 設定檔
-├── report.md                          # 技術報告
-├── train-v2.xlsx                      # 訓練資料
-├── valid-v2.xlsx                      # 驗證資料
-├── test-reindex-test-v2.1.xlsx       # 測試資料
-└── final_house_price_predictions.csv  # 預測結果
+├── new.ipynb                           # Main notebook
+├── README.md                           # Project documentation
+├── requirements.txt                    # Python dependencies
+├── config.yaml                         # Config file
+├── report.md                           # Technical report
+├── train-v2.xlsx                       # Training data
+├── valid-v2.xlsx                       # Validation data
+├── test-reindex-test-v2.1.xlsx         # Test data
+└── final_house_price_predictions.csv   # Output predictions
 ```
 
-## 實驗結果
+## Experimental Results
 
-### 特徵工程效果
-- 基礎特徵: 約70-75% R²
-- 進階組合特徵: 提升10-15% R²
-- 目標編碼: 額外提升5-8% R²
+### Feature Engineering Impact
 
-### 模型比較
-- RandomForest: R² ~0.75
-- XGBoost (基礎): R² ~0.82
-- XGBoost (進階): R² >0.85
+* Basic features: R² ≈ 70–75%
+* Advanced combo features: +10–15% R²
+* Target encoding: +5–8% R²
 
-## 自訂設定
+### Model Comparison
 
-編輯 `config.yaml` 來調整模型參數:
+| Model              | R² Score |
+| ------------------ | -------- |
+| Random Forest      | ~0.75    |
+| XGBoost (basic)    | ~0.82    |
+| XGBoost (advanced) | >0.85    |
+
+## Custom Configuration
+
+Edit `config.yaml` to adjust parameters:
 
 ```yaml
 model:
@@ -187,30 +199,33 @@ feature_selection:
   selection_method: "xgboost_importance"
 ```
 
-## 注意事項
+## Notes
 
-1. **資料隱私**: 所有個人識別資訊已被去除
-2. **GPU支援**: 建議使用GPU加速訓練過程
-3. **記憶體需求**: 建議至少8GB RAM
-4. **執行時間**: 完整訓練約需10-15分鐘
+1. All personal data has been anonymized
+2. GPU acceleration is recommended for faster training
+3. Minimum memory requirement: 8GB RAM
+4. Estimated training time: 10–15 minutes
 
-## 貢獻指南
+## Contribution Guidelines
 
-1. Fork 專案
-2. 建立特徵分支
-3. 提交變更
-4. 發起 Pull Request
+1. Fork the repository
+2. Create a new feature branch
+3. Commit your changes
+4. Submit a Pull Request
 
-## 授權資訊
+## License
 
-本專案僅供學術研究使用，請勿用於商業目的。
+This project is for academic and research use only. Commercial use is strictly prohibited.
 
-## 聯絡資訊
+## Contact
 
-如有問題或建議，請聯絡專案維護者。
+For questions or suggestions, please contact the project maintainers.
 
 ---
 
-**最後更新**: 2025年10月4日
-**版本**: 1.0.0
-**狀態**: 穩定版本
+**Last Updated:** October 4, 2025
+**Version:** 1.0.0
+**Status:** Stable Release
+
+```
+```
