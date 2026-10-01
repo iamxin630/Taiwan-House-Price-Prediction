@@ -1,5 +1,5 @@
 
-# House Price Prediction Model - NYCU IAII ML 2025 Regression
+# Taiwan House Price Prediction with XGBoost
 
 ## Project Overview
 
