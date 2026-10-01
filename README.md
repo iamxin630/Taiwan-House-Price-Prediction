@@ -103,7 +103,7 @@ pip install -r requirements.txt
 3. Check `final_house_price_predictions.csv` for output results
 
 ```bash
-jupyter notebook new.ipynb
+jupyter notebook house_price_prediction.ipynb
 ```
 
 ### Notebook Flow
@@ -156,8 +156,8 @@ jupyter notebook new.ipynb
 ## Project Structure
 
 ```
-nycu-iaii-ml-2025-regression/
-├── new.ipynb                           # Main notebook
+Taiwan-House-Price-Prediction/
+├── house_price_prediction.ipynb        # Main notebook
 ├── README.md                           # Project documentation
 ├── requirements.txt                    # Python dependencies
 ├── config.yaml                         # Config file
